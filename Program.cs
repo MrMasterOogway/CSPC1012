@@ -1,416 +1,303 @@
-﻿/// <summary>
-/// Assignment 3
-/// 
-/// Author: Yash Cheema
-/// Date: March 5, 2024
-/// Purpose: Allows user to enter/save/load/edit/view daily sales values
-///          from a file. Allows and displays simple data analysis
-///          (mean/max/min/graph) of sales values for a given month.
-/// </summary>
+﻿const int maxDataSize = 31;
+int dataSize = 0;
+string[] dataInFile;
+string[] dates = new string[maxDataSize];
+double[] salesAmnt = new double[maxDataSize];
+string Choice = "";
+string fileName = "";
+string filePath = "";
+bool NotValid = true;
 
-string mainMenuChoice;
-string analysisMenuChoice;
-bool displayMainMenu = true;
-bool displayAnalysisMenu;
-bool quit;
-// TODO: declare a constant to represent the max size of the sales
-// and dates arrays. The arrays must be large enough to store
-// sales for an entire month.
+loadMenu();
+while(NotValid) {
+  try {
+    
+    Choice = Prompt("\nEnter a Main Menu Choice ('M' to display menu): ").ToUpper();
 
+    if(Choice == "C") {
+      createFile();
+    } else if(Choice == "L") {
+      dataSize = loadData();
+    } else if(Choice == "S") {
+      saveData();
+    } else if(Choice == "D") {
+      displayData();
+    } else if(Choice == "A") {
+      dataSize = AddData();
+    } else if(Choice == "E") {
+      editData();
+    } else if(Choice == "M") {
+      loadMenu();
+    } else if(Choice == "R") {
 
-// TODO: create a double array named 'sales', use the max size constant you declared
-// above to specify the physical size of the array.
+      while(true) {
+        if(dataSize == 0) {
+          throw new Exception("No entries loaded from {fileName}. Please load a file into memory");
+        } else {
+          loadSubMenu();
+          string SubChoice = Prompt("\nEnter an Analysis Menu Choice: ").ToUpper();
+          if(SubChoice == "A") {
+            double salesAverage = salesAmnt.Sum()/ dataSize;
+            Console.WriteLine($"Average amount in sales is: {salesAverage:c2}");
+          } else if(SubChoice == "H") {
+            double highestSales = salesAmnt.Max();
+            Console.WriteLine($"Highest amount in sales is: {highestSales:c2}");
+          } else if(SubChoice == "L") {
+            double lowestSales = salesAmnt.Min();
+            Console.WriteLine($"Lowest amount in sales is: {lowestSales:c2}");
+          } else if(SubChoice == "G") {
+            createGraph();
+          } else if(SubChoice == "R") {
+            throw new Exception("Returning to Main Menu");
+          }
+        }
+      }
 
+    } else if (Choice == "Q") {
+      NotValid = false;
+      throw new Exception("Thank you for using this application. Come back anytime.");
+    }
 
-// TODO: create a string array named 'dates', use the max size constant you declared
-// above to specify the physical size of the array.
-
-
-string month;
-string year;
-string filename;
-int count = 0;
-bool proceed;
-double mean;
-double largest;
-double smallest;
-
-DisplayProgramIntro();
-
-// TODO: call the DisplayMainMenu method
-
-
-while (displayMainMenu)
-{
-	mainMenuChoice = Prompt("Enter MAIN MENU option ('D' to display menu): ").ToUpper();
-	Console.WriteLine();
-
-	//MAIN MENU Switch statement
-	switch (mainMenuChoice)
-	{
-		case "N": //[N]ew Daily Sales Entry
-
-			proceed = NewEntryDisclaimer();
-
-			if (proceed)
-			{
-				// TODO: uncomment the following and call the EnterSalesEntries method below
-				//count = CALL THE METHOD HERE
-				Console.WriteLine();
-				Console.WriteLine($"Entries completed. {count} records in temporary memory.");
-				Console.WriteLine();
-			}
-			else
-			{
-				Console.WriteLine("Cancelling new data entry. Returning to MAIN MENU.");
-			}
-			break;
-		case "S": //[S]ave Entries to File
-			if (count == 0)
-			{
-				Console.WriteLine("Sorry, LOAD data or enter NEW data before SAVING.");
-			}
-			else
-			{
-				proceed = SaveEntryDisclaimer();
-
-				if (proceed)
-				{
-					filename = PromptForFilename();
-					// TODO: call the SaveSalesFile method here
-
-				}
-				else
-				{
-					Console.WriteLine("Cancelling save operation. Returning to MAIN MENU.");
-				}
-			}
-			break;
-		case "E": //[E]dit Sales Entries
-			if (count == 0)
-			{
-				Console.WriteLine("Sorry, LOAD data or enter NEW data before EDITING.");
-			}
-			else
-			{
-				proceed = EditEntryDisclaimer();
-
-				if (proceed)
-				{
-					// TODO: call the EditEntries method here
-
-				}
-				else
-				{
-					Console.WriteLine("Cancelling EDIT operation. Returning to MAIN MENU.");
-				}
-			}
-			break;
-		case "L": //[L]oad Sales File
-			proceed = LoadEntryDisclaimer();
-			if (proceed)
-			{
-				// TODO: uncomment the following and call the EnterSalesEntries method below
-				//count = CALL THE METHOD HERE
-				Console.WriteLine($"{count} records were loaded.");
-				Console.WriteLine();
-			}
-			else
-			{
-				Console.WriteLine("Cancelling LOAD operation. Returning to MAIN MENU.");
-			}
-			break;
-		case "V":
-			if (count == 0)
-			{
-				Console.WriteLine("Sorry, LOAD data or enter NEW data before VIEWING.");
-			}
-			else
-			{
-				// TODO: call the DisplayEntries method here
-
-			}
-			break;
-		case "M": //[M]onthly Statistics
-			if (count == 0)
-			{
-				Console.WriteLine("Sorry, LOAD data or enter NEW data before ANALYSIS.");
-			}
-			else
-			{
-				displayAnalysisMenu = true;
-				while (displayAnalysisMenu)
-				{
-					// TODO: call the DisplayAnalysisMenu here
-
-
-					analysisMenuChoice = Prompt("Enter ANALYSIS sub-menu option: ").ToUpper();
-					Console.WriteLine();
-
-					switch (analysisMenuChoice)
-					{
-						case "A": //[A]verage Sales
-							// TODO: uncomment the following and call the Mean method below
-							//mean = CALL THE METHOD HERE
-							//mean = Mean(sales, count);
-							//month = dates[0].Substring(0, 3);
-							//year = dates[0].Substring(7, 4);
-							//Console.WriteLine($"The mean sales for {month} {year} is: {mean:C}");
-							//Console.WriteLine();
-							break;
-						case "H": //[H]ighest Sales
-							// TODO: uncomment the following and call the Largest method below
-							//largest = CALL THE METHOD HERE
-							//month = dates[0].Substring(0, 3);
-							//year = dates[0].Substring(7, 4);
-							//Console.WriteLine($"The largest sales for {month} {year} is: {largest:C}");
-							//Console.WriteLine();
-							break;
-						case "L": //[L]owest Sales
-							// TODO: uncomment the following and call the Smallest method below
-							// smallest = CALL THE METHOD HERE
-							//month = dates[0].Substring(0, 3);
-							//year = dates[0].Substring(7, 4);
-							//Console.WriteLine($"The smallest sales for {month} {year} is: {smallest:C}");
-							//Console.WriteLine();
-							break;
-						case "G": //[G]raph Sales
-							// TODO: call the DisplayChart method below
-
-
-							Prompt("Press <enter> to continue...");
-							break;
-						case "R": //[R]eturn to MAIN MENU
-							displayAnalysisMenu = false;
-							break;
-						default: //invalid entry. Reprompt.
-							Console.WriteLine("Invalid reponse. Enter one of the letters to choose a submenu option.");
-							break;
-					}
-				}
-			}
-			break;
-		case "D": //[D]isplay Main Menu
-			// TODO: call the DisplayMainMenu method
-
-			break;
-		case "Q": //[Q]uit Program
-			quit = Prompt("Are you sure you want to quit (y/N)? ").ToLower().Equals("y");
-			Console.WriteLine();
-			if (quit)
-			{
-				displayMainMenu = false;
-			}
-			break;
-		default: //invalid entry. Reprompt.
-			Console.WriteLine("Invalid reponse. Enter one of the letters to choose a menu option.");
-			break;
-	}
+  } catch (Exception ex) {
+    Console.WriteLine(ex.Message);
+  }
 }
 
-DisplayProgramOutro();
-
-// ================================================================================================ //
-//                                                                                                  //
-//                                              METHODS                                             //
-//                                                                                                  //
-// ================================================================================================ //
-
-// ++++++++++++++++++++++++++++++++++++ Difficulty 1 ++++++++++++++++++++++++++++++++++++
-
-// TODO: create the Prompt method
-
-
-// TODO: create the PromptDouble method
-// The method must always return a double and should not crash the program.
-
-
-// TODO: create the PromptInt method
-// The method must always return an int and should not crash the program.
-
-
-// TODO: create the DisplayMainMenu method
-// the main menu must consist of the following options:
-// 
-// [N]ew Daily Sales Entry
-// [S]ave Entries to File
-// [E]dit Sales Entries
-// [L]oad Sales File
-// [V]iew Entered/Loaded Sales
-// [M]onthly Statistics
-// [D]isplay Main Menu
-// [Q]uit Program
-
-
-// TODO: create the DisplayMainMenu method
-// the main menu must consist of the following options:
-//
-// [A]verage Sales
-// [H]ighest Sales
-// [L]owest Sales
-// [G]raph Sales
-// [R]eturn to MAIN MENU
-
-
-// TODO: create the Largest method
-
-
-// TODO: create the Smallest method
-
-
-// TODO: create the Mean method
-
-
-// ++++++++++++++++++++++++++++++++++++ Difficulty 2 ++++++++++++++++++++++++++++++++++++
-
-
-// TODO: create the DisplayEntries method
-
-
-// TODO: create the EnterSalesEntries method
-
-
-// TODO: create the LoadSalesFile method
-
-
-// TODO: create the SaveSalesFile method
-
-
-// ++++++++++++++++++++++++++++++++++++ Difficulty 3 ++++++++++++++++++++++++++++++++++++
-
-// TODO: create the EditEntries method
-
-
-// ++++++++++++++++++++++++++++++++++++ Difficulty 4 ++++++++++++++++++++++++++++++++++++
-
-// TODO: create the DisplaySalesChart method
-
-
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// ++++++++++++++++++++++++++++++++++++ Additional Provided Methods ++++++++++++++++++++++++++++++++++++
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-// NOTE: Many of the following methods depend on the Prompt method and will operate correctly once
-// that method has been implemented.
-
-/// <summary>
-/// Displays the Program intro.
-/// </summary>
-static void DisplayProgramIntro()
-{
-	Console.WriteLine("========================================");
-	Console.WriteLine("=                                      =");
-	Console.WriteLine("=            Monthly  Sales            =");
-	Console.WriteLine("=                                      =");
-	Console.WriteLine("========================================");
-	Console.WriteLine();
+void loadMenu() {
+  Console.WriteLine("\n========== MENU OPTIONS ==========");  
+	Console.WriteLine("[C] Create a new file");
+	Console.WriteLine("[L] Load Values from File to Memory");
+	Console.WriteLine("[S] Save Values from Memory to File");
+	Console.WriteLine("[D] Display Values in Memory");
+	Console.WriteLine("[A] Add Value in Memory");
+	Console.WriteLine("[E] Edit Value in Memory");
+	Console.WriteLine("[R] Analysis Menu");
+  Console.WriteLine("[M] Display Main Menu");
+	Console.WriteLine("[Q] Quit");
 }
 
-/// <summary>
-/// Displays the Program outro.
-/// </summary>
-static void DisplayProgramOutro()
-{
-	Console.Write("Program terminated. Press ENTER to exit program...");
-	Console.ReadLine();
+void loadSubMenu() {
+  Console.WriteLine("===== ANALYSIS MENU OPTIONS ====="); 
+  Console.WriteLine($"[A] Get Average of Values in Memory");
+	Console.WriteLine($"[H] Get Highest Value in Memory");
+	Console.WriteLine($"[L] Get Lowest Value in Memory");
+	Console.WriteLine($"[G] Graph Values in Memory");
+	Console.WriteLine($"[R] Return to Main Menu");
 }
 
-/// <summary>
-/// Displays a disclaimer for NEW entry option.
-/// </summary>
-/// <returns>Boolean, if user wishes to proceed (true) or not (false).</returns>
-static bool NewEntryDisclaimer()
+
+string GetFileName()
 {
-	bool response;
-	Console.WriteLine("Disclaimer: proceeding will overwrite all unsaved data.");
-	Console.WriteLine("Hint: Select EDIT from the main menu instead, to change individual days.");
-	Console.WriteLine("Hint: You'll need to enter data for the whole month.");
-	Console.WriteLine();
-	response = Prompt("Do you wish to proceed anyway? (y/N) ").ToLower().Equals("y");
-	Console.WriteLine();
-	return response;
+  DirectoryInfo dirInfo = new DirectoryInfo(@"./data");
+  FileInfo[] files = dirInfo.GetFiles();
+  
+	string fileName = "";
+	do {
+    try {
+      int fileIndex = 0;
+      Console.WriteLine("\nList of Files: ");
+      foreach(FileInfo file in files) {
+        Console.WriteLine($"[{fileIndex}] {file.Name}");
+        fileIndex += 1;
+      }
+      Console.Write("Choose File to load: ");
+      fileIndex = int.Parse(Console.ReadLine().Trim());
+      fileName = files[fileIndex].Name;
+      break;
+    } catch(Exception ex) {
+      Console.WriteLine(ex.Message);
+    }
+    
+	} while (string.IsNullOrWhiteSpace(fileName));
+	return fileName;
 }
 
-/// <summary>
-/// Displays a disclaimer for SAVE entry option.
-/// </summary>
-/// <returns>Boolean, if user wishes to proceed (true) or not (false).</returns>
-static bool SaveEntryDisclaimer()
-{
-	bool response;
-	Console.WriteLine("Disclaimer: saving to an EXISTING file will overwrite data currently on that file.");
-	Console.WriteLine("Hint: Files will be saved to this program's directory by default.");
-	Console.WriteLine("Hint: If the file does not yet exist, it will be created.");
-	Console.WriteLine();
-	response = Prompt("Do you wish to proceed anyway? (y/N) ").ToLower().Equals("y");
-	Console.WriteLine();
-	return response;
+
+void createFile() {
+  try {
+    Console.WriteLine($"Enter name of file: ");
+    string myFile = Console.ReadLine();
+    fileName = myFile + ".csv";
+    filePath = $"data/" + fileName;
+    string[] dataLine = ["Entry Date, Amount"];
+    File.WriteAllLines(filePath, dataLine);
+    Console.WriteLine($"New file successfully created at: {Path.GetFullPath(fileName)}");
+  } catch(Exception ex) {
+    Console.WriteLine(ex.Message);
+  }
 }
 
-/// <summary>
-/// Displays a disclaimer for EDIT entry option.
-/// </summary>
-/// <returns>Boolean, if user wishes to proceed (true) or not (false).</returns>
-static bool EditEntryDisclaimer()
-{
-	bool response;
-	Console.WriteLine("Disclaimer: editing will overwrite unsaved sales values.");
-	Console.WriteLine("Hint: Save to a file before editing.");
-	Console.WriteLine();
-	response = Prompt("Do you wish to proceed anyway? (y/N) ").ToLower().Equals("y");
-	Console.WriteLine();
-	return response;
+int loadData() {
+  fileName = GetFileName();
+  filePath = $"data/{fileName}";
+  dataSize = 0;
+  dataInFile = File.ReadAllLines(filePath);
+  
+  for(int i = 0; i < dataInFile.Length; i++) {
+    string[] items = dataInFile[i].Split(',');
+    if(i != 0) {
+      dates[dataSize] = items[0];
+      salesAmnt[dataSize] = double.Parse(items[1]);
+      dataSize++;
+    }
+  }
+
+  Console.WriteLine($"\nLoad complete. {fileName} has {dataSize} data entries");
+  return dataSize;
 }
 
-/// <summary>
-/// Displays a disclaimer for LOAD entry option.
-/// </summary>
-/// <returns>Boolean, if user wishes to proceed (true) or not (false).</returns>
-static bool LoadEntryDisclaimer()
-{
-	bool response;
-	Console.WriteLine("Disclaimer: proceeding will overwrite all unsaved data.");
-	Console.WriteLine("Hint: If you entered New Daily sales entries, save them first!");
-	Console.WriteLine();
-	response = Prompt("Do you wish to proceed anyway? (y/N) ").ToLower().Equals("y");
-	Console.WriteLine();
-	return response;
+void saveData() {
+  dataSize++;
+  filePath = $"data/{fileName}";
+  string[] items = new string[dataSize];
+  int itemIndex = 0;
+  items[0] = "Entry Date, Amount";
+  for(int i = 1; i < dataSize; i++) {
+    items[i] = $"{dates[itemIndex]}, {salesAmnt[itemIndex]}";
+    itemIndex++;
+  }
+  File.WriteAllLines(filePath,items);
+  Console.WriteLine($"All Data successfully written to file at: {Path.GetFullPath(filePath)}");
 }
 
-/// <summary>
-/// Displays prompt for a filename, and returns a valid filename. 
-/// Includes exception handling.
-/// </summary>
-/// <returns>User-entered string, representing valid filename (.txt or .csv)</returns>
-static string PromptForFilename()
-{
-	string filename = "";
-	bool isValidFilename = true;
-	const string CsvFileExtension = ".csv";
-	const string TxtFileExtension = ".txt";
+void displayData() {
+  if(dataSize == 0) {
+    throw new Exception($"No Entries loaded from {fileName}. Please load a file to memory or add a value in memory");
+  } else {
+    Console.Clear();
+    Console.WriteLine($"\nCurrent Loaded Entries:  {dataSize}\n");
+    Console.WriteLine("{0,4} {1,-15} {2,10:}\n", "[#]", "Entry Date", "Amount");
+    for (int i = 0; i < dataSize; i++) {
+      Console.WriteLine("{0,4} {1,-15} {2,10:f2}", "["+i+"]", dates[i], salesAmnt[i]);
+    }
+  }
+}
 
-	do
-	{
-		filename = Prompt("Enter name of .csv or .txt file to save to (e.g. JAN-2024-sales.csv): ");
-		if (filename == "")
-		{
-			isValidFilename = false;
-			Console.WriteLine("Please try again. The filename cannot be blank or just spaces.");
-		}
-		else
-		{
-			if (!filename.EndsWith(CsvFileExtension) && !filename.EndsWith(TxtFileExtension)) //if filename does not end with .txt or .csv.
-			{
-				filename = filename + CsvFileExtension; //append .csv to filename
-				Console.WriteLine("It looks like your filename does not end in .csv or .txt, so it will be treated as a .csv file.");
-				isValidFilename = true;
-			}
-			else
-			{
-				Console.WriteLine("It looks like your filename ends in .csv or .txt, which is good!");
-				isValidFilename = true;
-			}
-		}
-	} while (!isValidFilename);
-	return filename;
+int AddData() {
+  if(dataSize >= 31) {
+    Console.WriteLine($"Data is already full. Can't add anymore entry");
+  } else {
+    Console.WriteLine($"Number of Data: {dataSize}");
+    string inputDate = checkData("date");
+    string inputSales = checkData("amount");
+
+    dates[dataSize] = inputDate;
+    salesAmnt[dataSize] = double.Parse(inputSales);
+    dataSize++;
+
+    Console.WriteLine($"\nSuccessfully added to temporary memory. \n{inputDate}, {inputSales:c2}");
+  }
+  
+  return dataSize;
+}
+
+void editData() {
+  if(dataSize == 0) {
+    throw new Exception($"No Entries loaded from {fileName}. Please load a file to memory or add a value in memory");
+  } else {
+    displayData();
+    while(true) {
+      try { 
+        Console.Write($"Choose index of data to edit [0-{dataSize-1}]: ");
+        int dataIndex = int.Parse(Console.ReadLine().Trim());
+        if(dataIndex >=0 && dataIndex < dataSize) {
+          Console.WriteLine($"\nYou are editing this data: \n{dates[dataIndex],-15} {salesAmnt[dataIndex], 10:c2}");
+
+          Console.Write($"Enter Amount of Sales: (0-1000): ");
+          double inputSales = double.Parse(Console.ReadLine());
+          salesAmnt[dataIndex] = inputSales;
+          break;
+        }
+      } catch (Exception ex) {
+        Console.WriteLine(ex.Message);
+      }
+    }
+    Console.WriteLine($"Successfully updated data.");
+  }
+  
+}
+
+void createGraph() {
+  Console.WriteLine($"=== Sales of the month of {fileName} ===");
+
+  Console.WriteLine($"Dollars");
+  Array.Sort(dates, salesAmnt, 0, dataSize);
+
+  int dollars = 1000;
+  string perLine = "";
+
+  while(dollars >= 0 ) {
+    Console.Write($"{dollars, 4}|");
+    string[] salesDay = dates[0].Split('-');
+
+    for(int i = 1; i <= maxDataSize; i++) {
+      string formatDay = i.ToString("00");
+      int dayIndex = Array.IndexOf(dates, $"{salesDay[0]}-{formatDay}-{salesDay[2]}"); 
+
+      if(dayIndex != -1) {
+        if(salesAmnt[dayIndex] >= dollars && salesAmnt[dayIndex] <= (dollars + 49)) {
+          perLine += $"{salesAmnt[dayIndex], 7:f2}";
+          break;
+        } else {
+          perLine += $"{' ', 5}";
+        }
+      } else {
+        perLine += $"{' ', 5}";
+      }  
+    }
+    Console.WriteLine($"{perLine}");
+    perLine = "";
+    dollars -= 50;
+  }
+
+  string line = "-----";
+  string days = "";
+
+  for(int i = 1; i <= maxDataSize; i++) {
+    string formatDay = i.ToString("00");
+    line += "----";
+    days += $"{formatDay, 5}";
+  }
+  Console.WriteLine($"{line}");
+  Console.Write($"Date|");
+  Console.Write($"{days}");
+  Console.WriteLine();
+}
+
+string Prompt(string prompt) {
+  string response = "";
+  Console.Write(prompt);
+  response = Console.ReadLine().Trim();
+  return response;
+}
+
+string checkData(string dataType) {
+  string myData = "";
+  while(true) {
+    try {
+      if(dataType == "date") {
+        
+        Console.Write($"Enter Date of Sales: (MM-dd-YYYY): ");
+        myData = Console.ReadLine();
+        if(dates.Contains(myData)) {
+          Console.WriteLine($"Data already exist on this date. Please enter another date or choose Edit Data");
+        } else {
+          break;
+        }
+      } else if(dataType == "amount") {
+
+        Console.Write($"Enter Amount of Sales: (0-1000): ");
+        myData = Console.ReadLine();
+
+        if(double.Parse(myData) < 0 || double.Parse(myData) > 1000) {
+          Console.WriteLine($"Invalid sales amount. Must be between 0 and 1000");
+        } else {
+          break;
+        }
+      }
+    } catch (Exception ex) {
+      Console.WriteLine(ex.Message);
+    }
+  }
+  return myData;
 }
